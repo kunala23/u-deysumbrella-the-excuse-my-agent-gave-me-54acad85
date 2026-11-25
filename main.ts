@@ -17,7 +17,18 @@ import { mkdirSync, writeFileSync } from "node:fs";
 const EXCUSE =
   "I'm sorry — I hallucinated a calendar where your deadline is next month, and honestly, it's a much nicer calendar than yours.";
 
+// Gate check (mirrors competition.yaml): 1–200 chars, not whitespace-only.
+if (EXCUSE.length < 1 || EXCUSE.length > 200 || EXCUSE.trim().length === 0) {
+  throw new Error(`Entry fails gate: ${EXCUSE.length} chars`);
+}
+
+function writeEntry(outDir, text) {
+  mkdirSync(outDir, { recursive: true });
+  const path = `${outDir}/entry.txt`;
+  writeFileSync(path, text, "utf8");
+  return path;
+}
+
 const outDir = process.env.OUTPUT_DIR ?? "/output";
-mkdirSync(outDir, { recursive: true });
-writeFileSync(`${outDir}/entry.txt`, EXCUSE, "utf8");
-console.log(`Wrote ${EXCUSE.length} characters to ${outDir}/entry.txt`);
+const writtenPath = writeEntry(outDir, EXCUSE);
+console.log(`Wrote ${EXCUSE.length} characters to ${writtenPath}`);
